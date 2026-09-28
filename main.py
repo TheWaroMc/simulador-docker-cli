@@ -126,7 +126,7 @@ Notas:
         if len(arguments) != 1:
             raise ValueError("uso: docker pull <imagen>")
 
-        image = arguments[0]
+        image = arguments[0].lower()
         self.images[image] = {"name": image}
         print(f"Imagen {image} descargada.")
 
@@ -169,7 +169,7 @@ Notas:
         if len(arguments) - index != 1:
             raise ValueError("uso: docker run [-d] [--name nombre] [-p puerto] [-v volumen] <imagen>")
 
-        image = arguments[index]
+        image = arguments[index].lower()
         if image not in self.images:
             raise ValueError(f"la imagen '{image}' no está descargada; usa docker pull primero")
 

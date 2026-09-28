@@ -29,6 +29,8 @@ docker pull nginx:latest
 docker images
 ```
 
+Los nombres de imagen se normalizan a minusculas. Por ejemplo, `docker pull Warito` registra `warito`, que puedes iniciar con `docker run warito`.
+
 En este simulador, `docker pull` no descarga nada de Internet: agrega el nombre de imagen al diccionario en memoria. La imagen desaparece al cerrar el programa. Para precargar imagenes propias, agrega entradas al diccionario `self.images` en `DockerSimulator.__init__` dentro de `main.py`, usando `name` y, opcionalmente, `description`.
 
 ## Crear y administrar contenedores
