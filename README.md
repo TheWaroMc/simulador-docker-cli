@@ -68,13 +68,61 @@ Cada contenedor recibe un ID hexadecimal de 6 caracteres y comienza con estado `
 
 ### Contenedores
 
-| Comando | Que hace | Detalles |
-| --- | --- | --- |
-| `docker run [-d] [--name nombre] [-p host:contenedor] [-v origen:destino] <imagen>` | Crea e inicia un contenedor. | La imagen debe estar registrada. Genera un ID hexadecimal de 6 caracteres y asigna estado `Up`. Si no indicas `--name`, genera un nombre automaticamente. |
-| `docker ps` | Lista contenedores activos. | Solo muestra los que estan en estado `Up`. |
-| `docker ps -a` o `docker ps --all` | Lista todos los contenedores. | Incluye los detenidos (`Exited`). |
-| `docker stop <id|nombre>` | Detiene un contenedor activo. | Cambia su estado de `Up` a `Exited`; no se puede detener dos veces. |
-| `docker rm <id|nombre>` | Elimina un contenedor. | Primero debe estar detenido. Puedes identificarlo por ID o por nombre. |
-| `docker logs <id|nombre>` | Muestra informacion del contenedor. | Es un resumen simulado de imagen y estado, no son logs reales. |
+#### Crear un contenedor
 
-En `docker run`, puedes repetir `-p` y `-v`. Las opciones `-d`, `-p` y `-v` solo se guardan como datos: no publican puertos, no montan volumenes y `-d` no cambia el comportamiento. Los cambios se pierden al salir del programa; el simulador no ejecuta Docker ni construye imagenes con Dockerfiles.
+```text
+docker run [-d] [--name nombre] [-p host:contenedor] [-v origen:destino] <imagen>
+```
+
+Crea e inicia un contenedor a partir de una imagen registrada. Genera un ID hexadecimal de 6 caracteres y asigna el estado `Up`. Si omites `--name`, genera un nombre automaticamente.
+
+Opciones aceptadas:
+
+- `-d`: se acepta, pero no cambia el comportamiento del simulador.
+- `--name nombre`: asigna un nombre unico al contenedor.
+- `-p host:contenedor`: guarda la configuracion del puerto; no publica puertos realmente.
+- `-v origen:destino`: guarda la configuracion del volumen; no monta archivos realmente.
+
+Puedes repetir las opciones `-p` y `-v`.
+
+#### Listar contenedores activos
+
+```text
+docker ps
+```
+
+Muestra unicamente los contenedores con estado `Up`.
+
+#### Listar todos los contenedores
+
+```text
+docker ps -a
+```
+
+Tambien puedes usar `docker ps --all`. Ambos comandos incluyen los contenedores activos y los detenidos (`Exited`).
+
+#### Detener un contenedor
+
+```text
+docker stop <id|nombre>
+```
+
+Cambia el estado de `Up` a `Exited`. Sustituye `<id|nombre>` por el ID o el nombre del contenedor. No se puede detener otra vez un contenedor que ya esta detenido.
+
+#### Eliminar un contenedor
+
+```text
+docker rm <id|nombre>
+```
+
+Elimina un contenedor detenido. Si sigue activo, primero ejecuta `docker stop`.
+
+#### Consultar los logs
+
+```text
+docker logs <id|nombre>
+```
+
+Muestra un resumen simulado del nombre, la imagen y el estado; no son logs reales.
+
+Los cambios se pierden al salir del programa; el simulador no ejecuta Docker ni construye imagenes con Dockerfiles.
