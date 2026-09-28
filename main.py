@@ -36,12 +36,13 @@ class DockerSimulator:
             return False
 
         if not arguments or arguments[0] != "docker" or len(arguments) < 2:
-            print("Uso: docker <pull|run|ps|stop|rm|logs> (o 'exit')")
+            print("Uso: docker <help|pull|run|ps|stop|rm|logs> (o 'exit')")
             return True
 
         action = arguments[1]
         values = arguments[2:]
         handlers = {
+            "help": self._help,
             "pull": self._pull,
             "run": self._run_container,
             "ps": self._ps,
@@ -55,6 +56,62 @@ class DockerSimulator:
         else:
             handler(values)
         return True
+
+    def _help(self, arguments):
+        if arguments:
+            raise ValueError("uso: docker help")
+
+        print("""Simulador Docker CLI - Ayuda
+
+Uso:
+  docker <comando> [opciones]
+
+Comandos:
+  docker pull <imagen>
+      Registra una imagen en la lista local del simulador.
+
+  docker run [-d] [--name nombre] [-p host:contenedor] [-v origen:destino] <imagen>
+      Crea e inicia un contenedor usando una imagen descargada.
+      -d                 Acepta el modo detached; el contenedor queda en estado Up.
+      --name nombre      Asigna un nombre unico. Si se omite, se genera uno.
+      -p host:contenedor Guarda la configuracion del puerto en el contenedor.
+      -v origen:destino  Guarda la configuracion del volumen en el contenedor.
+      Puedes indicar -p y -v mas de una vez.
+
+  docker ps
+      Muestra los contenedores activos (estado Up).
+
+  docker ps -a
+  docker ps --all
+      Muestra todos los contenedores, incluidos los detenidos.
+
+  docker stop <id|nombre>
+      Detiene un contenedor activo y cambia su estado a Exited.
+
+  docker rm <id|nombre>
+      Elimina un contenedor detenido. Primero usa docker stop si sigue activo.
+
+  docker logs <id|nombre>
+      Muestra un resumen simulado del estado del contenedor; no son logs reales.
+
+  docker help
+      Muestra esta ayuda.
+
+  exit
+      Sale del simulador.
+
+Ejemplo:
+  docker pull nginx
+  docker run -d --name web -p 8080:80 -v datos:/var/www nginx
+  docker ps
+  docker logs web
+  docker stop web
+  docker rm web
+
+Notas:
+  - Los nombres de imagen, contenedores y sus estados solo existen en memoria.
+  - El simulador no descarga imagenes ni ejecuta Docker, publica puertos o monta volumenes.
+  - Para docker run, la imagen debe haberse agregado antes con docker pull.""")
 
     def _pull(self, arguments):
         if len(arguments) != 1:
