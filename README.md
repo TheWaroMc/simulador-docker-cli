@@ -48,7 +48,7 @@ docker rm compra-libros
 
 `docker run` requiere una imagen registrada. Acepta `-d`, `--name`, `-p` y `-v`; los puertos y volumenes se guardan como datos, pero no se publican ni se montan en el sistema. `-d` se acepta como opcion, aunque no cambia el comportamiento del simulador.
 
-Cada contenedor recibe un ID hexadecimal de 6 caracteres y comienza con estado `Up`. `docker stop` cambia su estado a `Exited`. Solo se puede eliminar con `docker rm` despues de detenerlo. Puedes identificarlo por ID o por nombre.
+Cada contenedor recibe un ID hexadecimal de 6 caracteres y comienza con estado `Up`. `docker stop` cambia su estado a `Exited`. El comando `docker rm` normal requiere que este detenido; `docker rm -f` tambien elimina contenedores activos. Puedes identificarlo por ID o por nombre.
 
 ## Referencia de comandos
 
