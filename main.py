@@ -1,10 +1,12 @@
 import secrets
 import shlex
 
+from demo_images import IMAGES
+
 
 class DockerSimulator:
     def __init__(self):
-        self.images = {}
+        self.images = {name: details.copy() for name, details in IMAGES.items()}
         self.containers = {}
 
     def run(self):
@@ -101,15 +103,15 @@ Comandos:
       Sale del simulador.
 
 Ejemplo:
-  docker pull nginx
-  docker run -d --name web -p 8080:80 -v datos:/var/www nginx
+    docker run -d --name compra-libros -p 8080:80 demo/compra-libros:1.0
   docker ps
-  docker logs web
-  docker stop web
-  docker rm web
+    docker logs compra-libros
+    docker stop compra-libros
+    docker rm compra-libros
 
 Notas:
-  - Los nombres de imagen, contenedores y sus estados solo existen en memoria.
+    - La imagen demo/compra-libros:1.0 viene precargada para probar docker run.
+    - Los nombres de imagen, contenedores y sus estados solo existen en memoria.
   - El simulador no descarga imagenes ni ejecuta Docker, publica puertos o monta volumenes.
   - Para docker run, la imagen debe haberse agregado antes con docker pull.""")
 
@@ -169,6 +171,9 @@ Notas:
             "volumes": volumes,
         }
         print(f"Contenedor {name} ({id_hash}) iniciado.")
+        description = self.images[image].get("description")
+        if description:
+            print(f"Aplicacion: {description}")
 
     def _ps(self, arguments):
         if arguments not in ([], ["-a"], ["--all"]):
