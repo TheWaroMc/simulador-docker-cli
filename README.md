@@ -144,3 +144,11 @@ docker logs <id|nombre>
 Muestra un resumen simulado del nombre, la imagen y el estado; no son logs reales.
 
 Los cambios se pierden al salir del programa; el simulador no ejecuta Docker ni construye imagenes con Dockerfiles.
+
+## Prompt original
+
+```text
+Actúa como un desarrollador Senior en Python. Necesito la estructura base para un simulador de consola interactivo (REPL) para Docker CLI. Crea una clase DockerSimulator que mantenga en memoria dos listas/diccionarios: images para imágenes descargadas y containers para los contenedores (con propiedades: id_hash de 6 caracteres, name, image, status ['Up' o 'Exited'], ports, volumes). Debe incluir el bucle principal while True que lea comandos del usuario (docker pull, docker run, docker ps, docker stop, docker rm, docker logs, exit). Retorna el código limpio con la estructura de lectura de comandos.
+
+Acción en Git: Guarden el código inicial en main.py y hagan commit.
+```
