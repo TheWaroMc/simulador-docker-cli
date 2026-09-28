@@ -1,0 +1,175 @@
+import secrets
+import shlex
+
+
+class DockerSimulator:
+    def __init__(self):
+        self.images = {}
+        self.containers = {}
+
+    def run(self):
+        print("Simulador Docker CLI. Escribe 'exit' para salir.")
+
+        while True:
+            try:
+                command = input("docker> ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print()
+                break
+
+            if not command:
+                continue
+
+            try:
+                if not self.execute(command):
+                    break
+            except ValueError as error:
+                print(f"Error: {error}")
+
+    def execute(self, command):
+        try:
+            arguments = shlex.split(command)
+        except ValueError as error:
+            raise ValueError(f"comando inválido: {error}") from error
+
+        if arguments == ["exit"]:
+            return False
+
+        if not arguments or arguments[0] != "docker" or len(arguments) < 2:
+            print("Uso: docker <pull|run|ps|stop|rm|logs> (o 'exit')")
+            return True
+
+        action = arguments[1]
+        values = arguments[2:]
+        handlers = {
+            "pull": self._pull,
+            "run": self._run_container,
+            "ps": self._ps,
+            "stop": self._stop,
+            "rm": self._remove,
+            "logs": self._logs,
+        }
+        handler = handlers.get(action)
+        if handler is None:
+            print(f"Comando no soportado: docker {action}")
+        else:
+            handler(values)
+        return True
+
+    def _pull(self, arguments):
+        if len(arguments) != 1:
+            raise ValueError("uso: docker pull <imagen>")
+
+        image = arguments[0]
+        self.images[image] = {"name": image}
+        print(f"Imagen {image} descargada.")
+
+    def _run_container(self, arguments):
+        name = None
+        ports = []
+        volumes = []
+        index = 0
+
+        while index < len(arguments) and arguments[index].startswith("-"):
+            option = arguments[index]
+            if option == "-d":
+                index += 1
+            elif option in ("--name", "-p", "-v"):
+                if index + 1 >= len(arguments):
+                    raise ValueError(f"falta el valor para {option}")
+                value = arguments[index + 1]
+                if option == "--name":
+                    name = value
+                elif option == "-p":
+                    ports.append(value)
+                else:
+                    volumes.append(value)
+                index += 2
+            else:
+                raise ValueError(f"opción no soportada: {option}")
+
+        if len(arguments) - index != 1:
+            raise ValueError("uso: docker run [-d] [--name nombre] [-p puerto] [-v volumen] <imagen>")
+
+        image = arguments[index]
+        if image not in self.images:
+            raise ValueError(f"la imagen '{image}' no está descargada; usa docker pull primero")
+
+        id_hash = secrets.token_hex(3)
+        while id_hash in self.containers:
+            id_hash = secrets.token_hex(3)
+
+        name = name or f"container-{id_hash}"
+        if any(container["name"] == name for container in self.containers.values()):
+            raise ValueError(f"ya existe un contenedor con el nombre '{name}'")
+
+        self.containers[id_hash] = {
+            "id_hash": id_hash,
+            "name": name,
+            "image": image,
+            "status": "Up",
+            "ports": ports,
+            "volumes": volumes,
+        }
+        print(f"Contenedor {name} ({id_hash}) iniciado.")
+
+    def _ps(self, arguments):
+        if arguments not in ([], ["-a"], ["--all"]):
+            raise ValueError("uso: docker ps [-a]")
+
+        show_all = bool(arguments)
+        containers = [
+            container
+            for container in self.containers.values()
+            if show_all or container["status"] == "Up"
+        ]
+        if not containers:
+            print("No hay contenedores.")
+            return
+
+        print(f"{'CONTAINER ID':<14} {'IMAGE':<20} {'STATUS':<8} {'NAMES'}")
+        for container in containers:
+            print(
+                f"{container['id_hash']:<14} {container['image']:<20} "
+                f"{container['status']:<8} {container['name']}"
+            )
+
+    def _find_container(self, identifier):
+        for container in self.containers.values():
+            if identifier in (container["id_hash"], container["name"]):
+                return container
+        raise ValueError(f"no se encontró el contenedor '{identifier}'")
+
+    def _stop(self, arguments):
+        if len(arguments) != 1:
+            raise ValueError("uso: docker stop <id|nombre>")
+
+        container = self._find_container(arguments[0])
+        if container["status"] == "Exited":
+            raise ValueError(f"el contenedor '{container['name']}' ya está detenido")
+        container["status"] = "Exited"
+        print(f"Contenedor {container['name']} detenido.")
+
+    def _remove(self, arguments):
+        if len(arguments) != 1:
+            raise ValueError("uso: docker rm <id|nombre>")
+
+        container = self._find_container(arguments[0])
+        if container["status"] == "Up":
+            raise ValueError("detén el contenedor antes de eliminarlo")
+        del self.containers[container["id_hash"]]
+        print(f"Contenedor {container['name']} eliminado.")
+
+    def _logs(self, arguments):
+        if len(arguments) != 1:
+            raise ValueError("uso: docker logs <id|nombre>")
+
+        container = self._find_container(arguments[0])
+        print(
+            f"Contenedor {container['name']} ({container['image']}): "
+            f"estado {container['status']}."
+        )
+
+
+if __name__ == "__main__":
+    DockerSimulator().run()
