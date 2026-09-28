@@ -36,7 +36,9 @@ En este simulador, `docker pull` no descarga nada de Internet: agrega el nombre 
 
 ### Flujo completo con una imagen propia
 
-`docker pull` registra la imagen, pero no crea un contenedor. Ejecuta `docker run` para crear uno; despues los comandos de contenedor lo identifican por el nombre asignado con `--name` o por el ID/nombre generado que muestra `run`.
+`docker pull` registra la imagen, pero no crea un contenedor. Ejecuta `docker run` para crear uno. El nombre de la imagen y el del contenedor son independientes: en el ejemplo, `warito` es la imagen y `--name warito` asigna ese nombre al contenedor. Si omites `--name`, `run` genera un nombre como `container-a1b2c3`; usa ese nombre o el ID que muestra para los comandos posteriores.
+
+En el prompt `docker>`, introduce un comando por vez. Puedes escribirlo con el prefijo `docker` o sin el, y espera el resultado antes de introducir el siguiente.
 
 ```text
 docker pull Warito
