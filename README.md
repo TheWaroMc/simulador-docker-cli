@@ -34,6 +34,21 @@ Los nombres de imagen se normalizan a minusculas. Por ejemplo, `docker pull Wari
 
 En este simulador, `docker pull` no descarga nada de Internet: agrega el nombre de imagen al diccionario en memoria. La imagen desaparece al cerrar el programa. Para precargar imagenes propias, agrega entradas al diccionario `self.images` en `DockerSimulator.__init__` dentro de `main.py`, usando `name` y, opcionalmente, `description`.
 
+### Flujo completo con una imagen propia
+
+`docker pull` registra la imagen, pero no crea un contenedor. Ejecuta `docker run` para crear uno; despues los comandos de contenedor lo identifican por el nombre asignado con `--name` o por el ID/nombre generado que muestra `run`.
+
+```text
+docker pull Warito
+docker images
+docker run -d --name warito warito
+docker ps
+docker logs warito
+docker stop warito
+docker ps -a
+docker rm warito
+```
+
 ## Crear y administrar contenedores
 
 Ejemplo con la imagen de compra de libros que ya viene incluida:
