@@ -152,3 +152,5 @@ Actúa como un desarrollador Senior en Python. Necesito la estructura base para 
 
 Acción en Git: Guarden el código inicial en main.py y hagan commit.
 ```
+
+Eduardo y Joel
