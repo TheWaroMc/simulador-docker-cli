@@ -97,8 +97,8 @@ Comandos:
   docker stop <id|nombre>
       Detiene un contenedor activo y cambia su estado a Exited.
 
-  docker rm <id|nombre>
-      Elimina un contenedor detenido. Primero usa docker stop si sigue activo.
+  docker rm [-f] <id|nombre>
+      Elimina un contenedor detenido. Usa -f para eliminar uno activo.
 
   docker logs <id|nombre>
       Muestra un resumen simulado del estado del contenedor; no son logs reales.
@@ -232,14 +232,18 @@ Notas:
         print(f"Contenedor {container['name']} detenido.")
 
     def _remove(self, arguments):
+        force = arguments[:1] == ["-f"]
+        if force:
+            arguments = arguments[1:]
         if len(arguments) != 1:
-            raise ValueError("uso: docker rm <id|nombre>")
+            raise ValueError("uso: docker rm [-f] <id|nombre>")
 
         container = self._find_container(arguments[0])
-        if container["status"] == "Up":
+        if container["status"] == "Up" and not force:
             raise ValueError("detén el contenedor antes de eliminarlo")
         del self.containers[container["id_hash"]]
-        print(f"Contenedor {container['name']} eliminado.")
+        suffix = " (forzado)" if force else ""
+        print(f"Contenedor {container['name']} eliminado{suffix}.")
 
     def _logs(self, arguments):
         if len(arguments) != 1:

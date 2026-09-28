@@ -112,10 +112,10 @@ Cambia el estado de `Up` a `Exited`. Sustituye `<id|nombre>` por el ID o el nomb
 #### Eliminar un contenedor
 
 ```text
-docker rm <id|nombre>
+docker rm [-f] <id|nombre>
 ```
 
-Elimina un contenedor detenido. Si sigue activo, primero ejecuta `docker stop`.
+Elimina un contenedor detenido. Si sigue activo, primero ejecuta `docker stop` o agrega `-f` para forzar la eliminacion. Por ejemplo, `docker rm -f compra-libros` elimina el contenedor por nombre aunque este activo.
 
 #### Consultar los logs
 
