@@ -1,12 +1,15 @@
 import secrets
 import shlex
 
-from demo_images import IMAGES
-
 
 class DockerSimulator:
     def __init__(self):
-        self.images = {name: details.copy() for name, details in IMAGES.items()}
+        self.images = {
+            "demo/compra-libros:1.0": {
+                "name": "demo/compra-libros:1.0",
+                "description": "Demo de compra de libros usados.",
+            }
+        }
         self.containers = {}
 
     def run(self):
@@ -38,7 +41,7 @@ class DockerSimulator:
             return False
 
         if not arguments or arguments[0] != "docker" or len(arguments) < 2:
-            print("Uso: docker <help|pull|run|ps|stop|rm|logs> (o 'exit')")
+            print("Uso: docker <help|pull|images|run|ps|stop|rm|logs> (o 'exit')")
             return True
 
         action = arguments[1]
@@ -46,6 +49,7 @@ class DockerSimulator:
         handlers = {
             "help": self._help,
             "pull": self._pull,
+            "images": self._images,
             "run": self._run_container,
             "ps": self._ps,
             "stop": self._stop,
@@ -71,6 +75,9 @@ Uso:
 Comandos:
   docker pull <imagen>
       Registra una imagen en la lista local del simulador.
+
+    docker images
+            Muestra las imagenes registradas en memoria.
 
   docker run [-d] [--name nombre] [-p host:contenedor] [-v origen:destino] <imagen>
       Crea e inicia un contenedor usando una imagen descargada.
@@ -122,6 +129,18 @@ Notas:
         image = arguments[0]
         self.images[image] = {"name": image}
         print(f"Imagen {image} descargada.")
+
+    def _images(self, arguments):
+        if arguments:
+            raise ValueError("uso: docker images")
+
+        if not self.images:
+            print("No hay imagenes.")
+            return
+
+        print(f"{'IMAGE':<32} DESCRIPTION")
+        for image in self.images.values():
+            print(f"{image['name']:<32} {image.get('description', '-')}")
 
     def _run_container(self, arguments):
         name = None
