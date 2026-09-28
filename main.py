@@ -13,7 +13,7 @@ class DockerSimulator:
         self.containers = {}
 
     def run(self):
-        print("Simulador Docker CLI. Escribe 'exit' para salir.")
+        print("Simulador Docker CLI. Escribe 'run' o 'docker run'; usa 'exit' para salir.")
 
         while True:
             try:
@@ -37,15 +37,18 @@ class DockerSimulator:
         except ValueError as error:
             raise ValueError(f"comando inválido: {error}") from error
 
+        if arguments and arguments[0] == "docker":
+            arguments = arguments[1:]
+
         if arguments == ["exit"]:
             return False
 
-        if not arguments or arguments[0] != "docker" or len(arguments) < 2:
+        if not arguments:
             print("Uso: docker <help|pull|images|run|ps|stop|rm|logs> (o 'exit')")
             return True
 
-        action = arguments[1]
-        values = arguments[2:]
+        action = arguments[0]
+        values = arguments[1:]
         handlers = {
             "help": self._help,
             "pull": self._pull,

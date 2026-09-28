@@ -13,6 +13,7 @@ py main.py
 En otros sistemas, puedes usar `python3 main.py` o `python main.py`, segun como este instalado Python.
 
 Cuando aparezca `docker>`, escribe los comandos del simulador. Para salir, escribe `exit`.
+En ese prompt puedes omitir el prefijo `docker`: se aceptan tanto `run ...` como `docker run ...`.
 
 ## Crear y ver imagenes
 
